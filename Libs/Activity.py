@@ -1,9 +1,8 @@
 import requests
-import json
+from Devdata import Env
 
-
-def post_activity():
+def post_activity(headers, id, title, dueData, completed):
     header_info = {"accept": "text/plain; v=1.0", "Content-Type": "application/json; v=1.0"}
-    payload = {"id": "0", "title": "Test", "dueDate": "2023-06-24T22:53:53.978Z", "completed": True}
-    r = requests.post("https://fakerestapi.azurewebsites.net/api/v1/Activities", headers=header_info, json=payload)
+    payload = {"id": id, "title": title, "dueDate": dueData, "completed": completed}
+    r = requests.post(Env.base_url + Env.activities_path, headers=headers, json=payload)
     return r
