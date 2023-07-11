@@ -4,25 +4,20 @@ Library         ../Libs/Activity.py
 Library         JsonValidator
 Library         ../Libs/Common.py
 Variables       ../Schemas/ActivitySchema.py
-Variables       ../DevData/Env.py
-
-*** Variables ***
-${baseUrl}      https://fakerestapi.azurewebsites.net
-${activitesPath}        /api/v1/Activities
-${payload}      Create Activity     title=Test  dueDate=2023-06-24T22:53:53.978Z    completed=true
-${headers}      Create Activity     Content-Type: application/json; v=1.0
+Variables       ../Devdata/Env.py
+Variables       ../Devdata/Activities.py
 
 *** Keywords ***
 The aplication is running
     ${response}=    GET     ${base_url}
-    Should Be Equal As Strings     ${response}      <Response [200]>
+    Should Be Equal As Strings     ${response.status_code}      ${status_code}[ok]
 
 I send a POST request to create an activity
-    ${resp}     POST ACTIVITY
+    ${resp}=     POST ACTIVITY       ${headers}     ${valid_activity}[0][id]     ${validActivity}[0][title]    ${validActivity}[0][dueDate]      ${validActivity}[0][completed]
     Set Global Variable    ${response}      ${resp}
 
 The response must be the new activity
-    Should Be Equal As Strings     ${response.status_code}    200
-    Should Be Equal As Strings     ${response.text}     {"id":0,"title":"Test","dueDate":"2023-06-24T22:53:53.978Z","completed":true}
+    Should Be Equal As Strings     ${response.status_code}    ${status_code}[ok]
     ${json}=    evaluate    json.loads('''${response.text}''')    json
+    Should Be Equal As Strings     ${json}     ${valid_activity}[0]
     Validate Json With Schema   ${json}     ${activitySchema}
